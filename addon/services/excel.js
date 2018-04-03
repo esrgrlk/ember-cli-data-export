@@ -25,7 +25,7 @@ export default Ember.Service.extend({
       return (epoch - new Date(Date.UTC(1899, 11, 30))) / (24 * 60 * 60 * 1000);
     }
 
-    function sheet_from_array_of_arrays(data) {
+    function sheet_from_array_of_arrays(data, headerRows=[0]) {
       var ws = {};
       var range = {s: {c:10000000, r:10000000}, e: {c:0, r:0 }};
       for(var R = 0; R !== data.length; ++R) {
@@ -37,6 +37,10 @@ export default Ember.Service.extend({
           var cell = {v: data[R][C] };
           if(cell.v == null) { continue; }
           var cell_ref = XLSX.utils.encode_cell({c:C,r:R});
+
+          if(headerRows.includes(R)){
+            cell.s = {font: {bold: true}, alignment: {horizontal: "center"}};
+          }
 
           if(typeof cell.v === 'number') { cell.t = 'n'; }
           else if(typeof cell.v === 'boolean') { cell.t = 'b'; }
