@@ -48,11 +48,100 @@ export default Ember.Service.extend({
             cell.t = 'n'; cell.z = XLSX.SSF._table[14];
             cell.v = datenum(cell.v._d);
           }
-          else { cell.t = 's'; }
+          else {
+            if(cell.v){
+              let cellValue = cell.v;
+              let dateMatch = cellValue.match(/^[0-9]{2}[.][0-9]{2}[.][0-9]{4}$/);
+
+              if(dateMatch){
+                let datePattern = /(\d{2})\.(\d{2})\.(\d{4})/;
+                let dateObject = new Date(cellValue.replace(datePattern,'$3-$2-$1'));
+                cell.v = dateObject;
+                cell.t = 'd';
+              }
+              else{
+                let cellValueCommasReplacedWithDots = cellValue;
+                let cellValueStartsWithDollar = (cellValueCommasReplacedWithDots[0] === '$');
+                if(cellValueStartsWithDollar){
+                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(1);
+                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\./g, "___");
+                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\,/g, ".");
+                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/___/g, ",");
+                }
+
+                let cellValueStartsWithPound = (cellValueCommasReplacedWithDots[0] === '£');
+                if(cellValueStartsWithPound){
+                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(1);
+                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\./g, "___");
+                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\,/g, ".");
+                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/___/g, ",");
+                }
+
+                let cellValueEndsWithTL = (cellValueCommasReplacedWithDots[cellValueCommasReplacedWithDots.length - 1] === '₺');
+                if(cellValueEndsWithTL){
+                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(0, cellValueCommasReplacedWithDots.length - 1);
+                }
+
+                let cellValueEndsWithEUR = (cellValueCommasReplacedWithDots[cellValueCommasReplacedWithDots.length - 1] === '€');
+                if(cellValueEndsWithEUR){
+                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(0, cellValueCommasReplacedWithDots.length - 1);
+                }
+
+                let cellValueDefaultNumber = cellValueCommasReplacedWithDots.replace(/\./g, "");
+                cellValueDefaultNumber = cellValueDefaultNumber.replace(/\,/g, ".");
+
+                if(!isNaN(cellValueDefaultNumber)){
+                  let formattedNumberString = '###,###,###,###,##0.00';
+                  if(!cellValueDefaultNumber.includes('.')){
+                    formattedNumberString = '###,###,###,###,###';
+                  }
+                  cell.v = parseFloat(cellValueDefaultNumber);
+                  if(cellValueStartsWithDollar){
+                    formattedNumberString = '$' + formattedNumberString;
+                  }
+                  if(cellValueStartsWithPound){
+                    formattedNumberString = '£' + formattedNumberString;
+                  }
+                  if(cellValueEndsWithTL){
+                    formattedNumberString = formattedNumberString + '₺';
+                  }
+                  if(cellValueEndsWithEUR){
+                    formattedNumberString = formattedNumberString + '€';
+                  }
+                  cell.z = formattedNumberString;
+                  cell.t = 'n';
+                }
+                else{
+                  cell.t = 's';
+                }
+              }
+            }
+            else{
+              cell.t = 's';
+            }
+          }
 
           ws[cell_ref] = cell;
         }
       }
+
+      let wscols = [
+        {wch:20},
+        {wch:20},
+        {wch:20},
+        {wch:20},
+        {wch:20},
+        {wch:20},
+        {wch:20},
+        {wch:20},
+        {wch:20},
+        {wch:20},
+        {wch:20},
+        {wch:20},
+        {wch:20}
+      ];
+      ws['!cols'] = wscols;
+
       if(range.s.c < 10000000) { ws['!ref'] = XLSX.utils.encode_range(range); }
       return ws;
     }
