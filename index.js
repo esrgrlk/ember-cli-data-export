@@ -1,8 +1,7 @@
-/* jshint node: true */
 'use strict';
 
 module.exports = {
-  name: 'ember-cli-data-export',
+  name: require('./package').name,
 
   isDevelopingAddon : function(){
     return true;

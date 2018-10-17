@@ -1,1 +1,1 @@
-export { default } from 'ember-cli-data-export/components/export-selector';
+export { default } from 'ember-cli-data-export-with-style/components/export-selector';

@@ -1,30 +1,51 @@
-# ember-cli-data-export
+ember-cli-data-export-with-style
+==============================================================================
 
-Addon that encapsulates ability to render a data set as either excel or csv.
+[Short description of the addon.]
 
-## Installation
+Installation
+------------------------------------------------------------------------------
 
- - ember install ember-cli-data-export
-
-## Usage
-
- - uses js-xlsx library for rendering excel content.
- - automatically injects a service for both excel and csv format
- - feed a datastructure that's an array of arrays, where each internal array is the set of data to be rendered for that row.
- - Example: [['Title 1', 'Title 2', 'Title 3'],['row1cell1', 'row1cell2', 'row1cell3'],['row2cell1', 'row2cell2', 'row2cell3']]
-
-## Example
- ```javascript
-
-    var data = [
-        ['Title 1', 'Title 2', 'Title 3'],
-        ['row1cell1', 'row1cell2', 'row1cell3'],
-        ['row2cell1', 'row2cell2', 'row2cell3']
-    ];
-
-    if (type === 'Excel') {
-      this.get('excel').export(data, {sheetName: 'sheet1', fileName: 'test.xlsx'});
-    } else if (type === 'CSV') {
-      this.get('csv').export(data, {fileName: 'test.csv'});
-    }
 ```
+ember install ember-cli-data-export-with-style
+```
+
+
+Usage
+------------------------------------------------------------------------------
+
+[Longer description of how to use the addon in apps.]
+
+
+Contributing
+------------------------------------------------------------------------------
+
+### Installation
+
+* `git clone <repository-url>`
+* `cd ember-cli-data-export-with-style`
+* `npm install`
+
+### Linting
+
+* `npm run lint:hbs`
+* `npm run lint:js`
+* `npm run lint:js -- --fix`
+
+### Running tests
+
+* `ember test` – Runs the test suite on the current Ember version
+* `ember test --server` – Runs the test suite in "watch mode"
+* `ember try:each` – Runs the test suite against multiple Ember versions
+
+### Running the dummy application
+
+* `ember serve`
+* Visit the dummy application at [http://localhost:4200](http://localhost:4200).
+
+For more information on using ember-cli, visit [https://ember-cli.com/](https://ember-cli.com/).
+
+License
+------------------------------------------------------------------------------
+
+This project is licensed under the [MIT License](LICENSE.md).
