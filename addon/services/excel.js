@@ -25,6 +25,17 @@ export default Service.extend({
       return (epoch - new Date(Date.UTC(1899, 11, 30))) / (24 * 60 * 60 * 1000);
     }
 
+    function isDateString(str){
+      if(str && str.length === 10){
+        if(!isNaN(str[0]) && !isNaN(str[1]) && !isNaN(str[3]) && !isNaN(str[4]) && !isNaN(str[6]) && !isNaN(str[7]) && !isNaN(str[8]) && !isNaN(str[9])){
+          if((str[2] === "." && str[5] === ".") || (str[2] === "/" && str[5] === "/")){
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
     function sheet_from_array_of_arrays(data, headerRows=[0]) {
       var ws = {};
       var range = {s: {c:10000000, r:10000000}, e: {c:0, r:0 }};
@@ -51,9 +62,10 @@ export default Service.extend({
           else {
             if(cell.v){
               let cellValue = cell.v;
-              let dateMatch = cellValue.match(/^[0-9]{2}[.][0-9]{2}[.][0-9]{4}$/);
+              cellValue = cellValue.trim();
+              let isDateStr = isDateString(cellValue);
 
-              if(dateMatch){
+              if(isDateStr){
                 let datePattern = /(\d{2})\.(\d{2})\.(\d{4})/;
                 let dateObject = new Date(cellValue.replace(datePattern,'$3-$2-$1'));
                 cell.v = dateObject;
