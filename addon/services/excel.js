@@ -45,91 +45,109 @@ export default Service.extend({
           if(range.s.c > C) { range.s.c = C; }
           if(range.e.r < R) { range.e.r = R; }
           if(range.e.c < C) { range.e.c = C; }
-          var cell = {v: data[R][C] };
-          if(cell.v == null) { continue; }
+          let cellObject = data[R][C];
+
+          let cell;
           var cell_ref = XLSX.utils.encode_cell({c:C,r:R});
 
-          if(headerRows.includes(R)){
-            cell.s = {font: {bold: true}, alignment: {horizontal: "center"}};
+          // if type is given do not look for another type through value
+          if(typeof cellObject === 'object'){
+            cell = {v: cellObject.v, t: cellObject.t}
+
+            if(cell.v == null) { continue; }
+
+            if(headerRows.includes(R)){
+              cell.s = {font: {bold: true}, alignment: {horizontal: "center"}};
+            }
+
           }
+          else{
+            cell = {v: cellObject};
 
-          if(typeof cell.v === 'number') { cell.t = 'n'; }
-          else if(typeof cell.v === 'boolean') { cell.t = 'b'; }
-          else if((typeof cell.v === 'object') && (cell.v._d instanceof Date)) {
-            cell.t = 'n'; cell.z = XLSX.SSF._table[14];
-            cell.v = datenum(cell.v._d);
-          }
-          else {
-            if(cell.v){
-              let cellValue = cell.v;
-              cellValue = cellValue.trim();
-              let isDateStr = isDateString(cellValue);
+            if(cell.v == null) { continue; }
 
-              if(isDateStr){
-                let datePattern = /(\d{2})\.(\d{2})\.(\d{4})/;
-                let dateObject = new Date(cellValue.replace(datePattern,'$3-$2-$1'));
-                cell.v = dateObject;
-                cell.t = 'd';
-              }
-              else{
-                let cellValueCommasReplacedWithDots = cellValue;
-                let cellValueStartsWithDollar = (cellValueCommasReplacedWithDots[0] === '$');
-                if(cellValueStartsWithDollar){
-                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(1);
-                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\./g, "___");
-                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\,/g, ".");
-                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/___/g, ",");
-                }
+            if(headerRows.includes(R)){
+              cell.s = {font: {bold: true}, alignment: {horizontal: "center"}};
+            }
 
-                let cellValueStartsWithPound = (cellValueCommasReplacedWithDots[0] === '£');
-                if(cellValueStartsWithPound){
-                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(1);
-                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\./g, "___");
-                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\,/g, ".");
-                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/___/g, ",");
-                }
+            if(typeof cell.v === 'number') { cell.t = 'n'; }
+            else if(typeof cell.v === 'boolean') { cell.t = 'b'; }
+            else if((typeof cell.v === 'object') && (cell.v._d instanceof Date)) {
+              cell.t = 'n'; cell.z = XLSX.SSF._table[14];
+              cell.v = datenum(cell.v._d);
+            }
+            else {
+              if(cell.v){
+                let cellValue = cell.v;
+                cellValue = cellValue.trim();
+                let isDateStr = isDateString(cellValue);
 
-                let cellValueEndsWithTL = (cellValueCommasReplacedWithDots[cellValueCommasReplacedWithDots.length - 1] === '₺');
-                if(cellValueEndsWithTL){
-                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(0, cellValueCommasReplacedWithDots.length - 1);
-                }
-
-                let cellValueEndsWithEUR = (cellValueCommasReplacedWithDots[cellValueCommasReplacedWithDots.length - 1] === '€');
-                if(cellValueEndsWithEUR){
-                  cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(0, cellValueCommasReplacedWithDots.length - 1);
-                }
-
-                let cellValueDefaultNumber = cellValueCommasReplacedWithDots.replace(/\./g, "");
-                cellValueDefaultNumber = cellValueDefaultNumber.replace(/\,/g, ".");
-
-                if(!isNaN(cellValueDefaultNumber)){
-                  let formattedNumberString = '###,###,###,###,##0.00';
-                  if(!cellValueDefaultNumber.includes('.')){
-                    formattedNumberString = '###,###,###,###,###';
-                  }
-                  cell.v = parseFloat(cellValueDefaultNumber);
-                  if(cellValueStartsWithDollar){
-                    formattedNumberString = '$' + formattedNumberString;
-                  }
-                  if(cellValueStartsWithPound){
-                    formattedNumberString = '£' + formattedNumberString;
-                  }
-                  if(cellValueEndsWithTL){
-                    formattedNumberString = formattedNumberString + '₺';
-                  }
-                  if(cellValueEndsWithEUR){
-                    formattedNumberString = formattedNumberString + '€';
-                  }
-                  cell.z = formattedNumberString;
-                  cell.t = 'n';
+                if(isDateStr){
+                  let datePattern = /(\d{2})\.(\d{2})\.(\d{4})/;
+                  let dateObject = new Date(cellValue.replace(datePattern,'$3-$2-$1'));
+                  cell.v = dateObject;
+                  cell.t = 'd';
                 }
                 else{
-                  cell.t = 's';
+                  let cellValueCommasReplacedWithDots = cellValue;
+                  let cellValueStartsWithDollar = (cellValueCommasReplacedWithDots[0] === '$');
+                  if(cellValueStartsWithDollar){
+                    cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(1);
+                    cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\./g, "___");
+                    cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\,/g, ".");
+                    cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/___/g, ",");
+                  }
+
+                  let cellValueStartsWithPound = (cellValueCommasReplacedWithDots[0] === '£');
+                  if(cellValueStartsWithPound){
+                    cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(1);
+                    cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\./g, "___");
+                    cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/\,/g, ".");
+                    cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.replace(/___/g, ",");
+                  }
+
+                  let cellValueEndsWithTL = (cellValueCommasReplacedWithDots[cellValueCommasReplacedWithDots.length - 1] === '₺');
+                  if(cellValueEndsWithTL){
+                    cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(0, cellValueCommasReplacedWithDots.length - 1);
+                  }
+
+                  let cellValueEndsWithEUR = (cellValueCommasReplacedWithDots[cellValueCommasReplacedWithDots.length - 1] === '€');
+                  if(cellValueEndsWithEUR){
+                    cellValueCommasReplacedWithDots = cellValueCommasReplacedWithDots.substr(0, cellValueCommasReplacedWithDots.length - 1);
+                  }
+
+                  let cellValueDefaultNumber = cellValueCommasReplacedWithDots.replace(/\./g, "");
+                  cellValueDefaultNumber = cellValueDefaultNumber.replace(/\,/g, ".");
+
+                  if(!isNaN(cellValueDefaultNumber)){
+                    let formattedNumberString = '###,###,###,###,##0.00';
+                    if(!cellValueDefaultNumber.includes('.')){
+                      formattedNumberString = '###,###,###,###,###';
+                    }
+                    cell.v = parseFloat(cellValueDefaultNumber);
+                    if(cellValueStartsWithDollar){
+                      formattedNumberString = '$' + formattedNumberString;
+                    }
+                    if(cellValueStartsWithPound){
+                      formattedNumberString = '£' + formattedNumberString;
+                    }
+                    if(cellValueEndsWithTL){
+                      formattedNumberString = formattedNumberString + '₺';
+                    }
+                    if(cellValueEndsWithEUR){
+                      formattedNumberString = formattedNumberString + '€';
+                    }
+                    cell.z = formattedNumberString;
+                    cell.t = 'n';
+                  }
+                  else{
+                    cell.t = 's';
+                  }
                 }
               }
-            }
-            else{
-              cell.t = 's';
+              else{
+                cell.t = 's';
+              }
             }
           }
 
