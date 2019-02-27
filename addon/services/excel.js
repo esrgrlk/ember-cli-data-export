@@ -3,7 +3,8 @@ import optionize from "../utils/utils";
 
 const defaultConfig = {
   sheetName: 'Sheet1',
-  fileName: 'export.xlsx'
+  fileName: 'export.xlsx',
+  headerRows: [0]
 };
 
 export default Service.extend({
@@ -182,7 +183,7 @@ export default Service.extend({
       this.Sheets = {};
     }
 
-    var wb = new Workbook(), ws = sheet_from_array_of_arrays(data);
+    var wb = new Workbook(), ws = sheet_from_array_of_arrays(data, options.headerRows);
 
     /* add worksheet to workbook */
     wb.SheetNames.push(options.sheetName);
