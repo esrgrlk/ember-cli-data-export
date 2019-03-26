@@ -80,6 +80,7 @@ export default Service.extend({
             else {
               if(cell.v){
                 let cellValue = cell.v;
+                cellValue = "" + cellValue;
                 cellValue = cellValue.trim();
                 let isDateStr = isDateString(cellValue);
 
