@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parserOptions: {
-    ecmaVersion: 2017,
+    ecmaVersion: 2018,
     sourceType: 'module'
   },
   plugins: [
@@ -15,6 +15,60 @@ module.exports = {
     browser: true
   },
   rules: {
+    "ember/avoid-leaking-state-in-components": [2, [
+      'validations',
+      'validationDefs'
+    ]],
+    "ember/avoid-leaking-state-in-ember-objects": [2, [
+      'classNames',
+      'classNameBindings',
+      'actions',
+      'concatenatedProperties',
+      'mergedProperties',
+      'positionalParams',
+      'attributeBindings',
+      'queryParams',
+      'attrs',
+      'validations',
+      'validationDefs',
+      'eqQueryParamsTransformer',
+      'rngQueryParamsTransformer',
+      'queryParams'
+    ]],
+    "no-bitwise": 2,
+    "no-cond-assign": 0,
+    "curly": 2,
+    "no-debugger": 0,
+    "eqeqeq": 2,
+    "no-eq-null": 0,
+    "no-eval": 0,
+    "guard-for-in": 2,
+    "wrap-iife": 0,
+    "comma-style": [
+      2,
+      "last"
+    ],
+    "max-depth": [
+      2,
+      9
+    ],
+    "max-params": [
+      2,
+      6
+    ],
+    "new-cap": 2,
+    "no-caller": 2,
+    "no-console": 0,
+    "no-sequences": 2,
+    "no-empty": 0,
+    "no-new": 0,
+    "no-plusplus": 0,
+    "no-undef": 2,
+    "no-unused-vars": [2, {"vars": "all", "args": "none"}],
+    "dot-notation": 0,
+    "strict": 0,
+    "ember/no-restricted-resolver-tests": 0,
+    "ember/no-observers": 0
   },
   overrides: [
     // node files
@@ -36,8 +90,7 @@ module.exports = {
         'tests/dummy/app/**'
       ],
       parserOptions: {
-        sourceType: 'script',
-        ecmaVersion: 2015
+        sourceType: 'script'
       },
       env: {
         browser: false,
